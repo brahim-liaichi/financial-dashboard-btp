@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <div>
+        <h2>Delete All Commands</h2>
+        <p>Warning: This will delete ALL commands in the database. This action cannot be undone.</p>
+        <form action="." method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Delete All Commands" style="background-color: #ba2121; color: white;">
+        </form>
+    </div>
+{% endblock %}

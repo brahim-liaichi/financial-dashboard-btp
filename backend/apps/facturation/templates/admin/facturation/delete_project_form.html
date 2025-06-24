@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <div>
+        <h2>Delete Project Data</h2>
+        <p>This will delete all Facturation and Avancement records for the specified project.</p>
+        <form action="." method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Delete Project" style="background-color: #ba2121; color: white;">
+        </form>
+    </div>
+{% endblock %}

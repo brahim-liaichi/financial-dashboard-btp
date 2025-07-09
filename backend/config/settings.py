@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import tempfile
+from datetime import timedelta
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,14 +12,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv(
-    "h3ebsv013ja6@#j1p)6axzy2wmzgml&4&8$&+ky704ufoxbkpo",
-    "your-default-secret-key-for-development",
+    "SECRET_KEY",
+    "h3ebsv013ja6@#j1p)6axzy2wmzgml&4&8$&+ky704ufoxbkpo",  # Default for development only
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+# Railway provides RAILWAY_STATIC_URL, we'll use that to detect Railway
+IS_RAILWAY = os.getenv("RAILWAY_STATIC_URL") is not None
+
+# Configure allowed hosts for Railway and local development
+ALLOWED_HOSTS = []
+
+if IS_RAILWAY:
+    # Railway deployment
+    ALLOWED_HOSTS = ["*"]  # Railway handles this with their proxy
+elif DEBUG:
+    # Local development
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -76,12 +88,26 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Database configuration
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",  # Use SQLite for now
-        "NAME": BASE_DIR / "db.sqlite3",
+if IS_RAILWAY:
+    # Railway PostgreSQL database
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("PGDATABASE"),
+            "USER": os.getenv("PGUSER"),
+            "PASSWORD": os.getenv("PGPASSWORD"),
+            "HOST": os.getenv("PGHOST"),
+            "PORT": os.getenv("PGPORT", "5432"),
+        }
     }
-}
+else:
+    # Local SQLite database
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -137,17 +163,29 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",  # React frontend
-    "http://127.0.0.1:3000",
-]
+CORS_ALLOWED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = []
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-]
+if IS_RAILWAY:
+    # Production CORS settings - you'll update these after deploying frontend
+    CORS_ALLOWED_ORIGINS = [
+        "https://your-frontend-url.vercel.app",  # Update this after Vercel deployment
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://your-frontend-url.vercel.app",  # Update this after Vercel deployment
+    ]
+else:
+    # Development CORS settings
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+    ]
 
 CSRF_USE_SESSIONS = True
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
@@ -176,53 +214,40 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": "debug.log",
-        },
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        "apps.controle_depenses": {
-            "handlers": ["file", "console"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-    },
-}
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": tempfile.gettempdir(),  # Uses system temp folder,  # Use an appropriate path
-        "TIMEOUT": 300,  # 5 minute in seconds
-        "OPTIONS": {"MAX_ENTRIES": 1000},
-    }
-}
-
-# Security settings
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-
-
-from datetime import timedelta
-
+# JWT Settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
+# Cache configuration
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": tempfile.gettempdir(),
+        "TIMEOUT": 300,  # 5 minutes in seconds
+        "OPTIONS": {"MAX_ENTRIES": 1000},
+    }
+}
+
+# Security settings for production
+if not DEBUG:
+    # HTTPS Security
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Cookie Security
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Browser Security
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+
+# Logging configuration
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -238,31 +263,38 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "DEBUG" if DEBUG else "INFO",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": "debug.log",
-            "formatter": "verbose",
-        },
+        "file": (
+            {
+                "level": "DEBUG",
+                "class": "logging.FileHandler",
+                "filename": "debug.log",
+                "formatter": "verbose",
+            }
+            if DEBUG
+            else {
+                "level": "INFO",
+                "class": "logging.StreamHandler",  # Railway uses console for logs
+                "formatter": "simple",
+            }
+        ),
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"],
+            "handlers": ["console", "file"] if DEBUG else ["console"],
             "level": "INFO",
         },
         "apps": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "handlers": ["console", "file"] if DEBUG else ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
             "propagate": True,
         },
-        # Specific logger for your evolution service
         "apps.controle_depenses.services.evolution_service": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "handlers": ["console", "file"] if DEBUG else ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
             "propagate": True,
         },
     },

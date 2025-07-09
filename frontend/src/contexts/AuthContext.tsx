@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect } from 'react';
 import { authApi } from '@/api/endpoints/auth';
 import type { AuthContextType, User } from '@/contexts/AuthContext.types';

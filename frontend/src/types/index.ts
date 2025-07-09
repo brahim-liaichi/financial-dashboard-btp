@@ -243,6 +243,7 @@ export interface ControleUpdateInput {
 export type ControleGroupKey = `${string}-${string}`;
 
 // Summary metrics type
+// Summary metrics type - Updated to match useControle.ts usage
 interface SummaryMetrics {
   totalDepensesEngagees: number;
   totalDepensesEngagees_reel: number;

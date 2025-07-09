@@ -40,6 +40,7 @@ const processArticlesData = (data: ControleMetrics[]): ProjectArticleMetrics[] =
     }));
 
 // Top 5 articles calculation utility
+// Top 5 articles calculation utility
 const calculateTopFiveArticles = (articles: ProjectArticleMetrics[]): ProjectArticleMetrics[] => {
     if (!articles.length) return [];
 
@@ -59,19 +60,28 @@ const calculateTopFiveArticles = (articles: ProjectArticleMetrics[]): ProjectArt
         0
     );
 
-    // Add "Others" as a summary of remaining articles
+    // Add "Others" as a summary of remaining articles with all required properties
     return [
         ...topFive,
         {
             numero_article: 'Autres',
             prix_vente: 0,
+            prix_vente_base: 0,
+            budget_chef_projet: 0,
+            budget_chef_projet_base: 0,
             code_projet: 'Autres',
             depenses_engagees: otherSum,
             depenses_facturees: 0,
             reste_a_depenser: 0,
             fin_chantier: 0,
             budget_percentage: 0,
-            type_projet: 'FORFAIT'
+            type_projet: 'FORFAIT',
+            // Add the missing required properties
+            depenses_engagees_reel: 0,
+            depenses_facturees_reel: 0,
+            fin_chantier_reel: 0,
+            rentabilite_reel: 0,
+            rentabilite: 0
         },
     ];
 };

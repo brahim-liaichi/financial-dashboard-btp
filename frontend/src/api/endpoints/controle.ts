@@ -27,12 +27,6 @@ interface EvolutionResponse {
     project_name: string;
 }
 // Centralized type mapping with stronger typing
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const FIABILITE_MAP = {
-    'Estimé': 'E',
-    'Chiffré': 'C',
-    'Marché': 'M'
-} as const;
 
 export const controleApi = {
     // Enhanced data validation and normalization for all entries

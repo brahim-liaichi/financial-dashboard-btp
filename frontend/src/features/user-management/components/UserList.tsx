@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Table } from '@/components/ui/Table';
 import { Card } from '@/components/ui/Card';
 import apiClient from '@/api/client';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { User, TableColumn } from '@/types';
+import { TableColumn } from '@/types';
 
 // Extend User to make it compatible with Record<string, unknown>
 interface ExtendedUser extends Record<string, unknown> {

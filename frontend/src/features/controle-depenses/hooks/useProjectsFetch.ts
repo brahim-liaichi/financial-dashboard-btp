@@ -1,10 +1,10 @@
 // Path: src/features/controle-depenses/hooks/useProjectsFetch.ts
-import { ControleMetrics, DebugEntry } from '@/types';
+import { ControleMetrics } from '@/types';
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 export const useProjectsFetch = (
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-fetchControles: (filters?: { code_projet?: string; }) => Promise<ControleMetrics[]>, _p0: { onError: (err: Error) => DebugEntry; }) => {
+    fetchControles: (filters?: { code_projet?: string; }) => Promise<ControleMetrics[]>
+) => {
     const [projects, setProjects] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);

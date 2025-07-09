@@ -1,7 +1,6 @@
 // src/api/endpoints/users.ts
 import apiClient from '../client';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { API_CONFIG, ENDPOINTS } from '@/api/config';
+import { ENDPOINTS } from '@/api/config';
 import axios from 'axios';
 
 // User and Project related interfaces

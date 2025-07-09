@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/api/endpoints/facturation.ts
 import apiClient from '../client';
 import { ENDPOINTS } from '../config';
 import axios from 'axios';

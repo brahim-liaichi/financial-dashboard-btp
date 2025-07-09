@@ -2,10 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useControle } from '../../hooks/useControle';
 import { controleApi } from '../../api/endpoints/controle';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ControleMetrics, ProjectType } from '@/types';
+import type { ProjectType } from '@/types';
 
-// Create a type that exactly matches the error message
+// Create a type that exactly matches ControleMetrics
 type TestMetrics = {
   date: string | undefined;
   numero_article: string;
@@ -23,6 +22,10 @@ type TestMetrics = {
   rentabilite: number;
   rapport: number;
   status: 'Profitable' | 'Break-even' | 'Loss' | 'Undefined';
+  // Add the missing required properties
+  depenses_engagees_reel: number;
+  depenses_facturees_reel: number;
+  rapport_aterrissage: number;
   total_commandes?: number;
   total_depenses_engagees?: number;
   total_depenses_facturees?: number;
@@ -47,6 +50,10 @@ describe('useControle Hook', () => {
       rentabilite: 0.5,
       rapport: 0.9,
       status: 'Profitable',
+      // Add the missing properties with default values
+      depenses_engagees_reel: 950,
+      depenses_facturees_reel: 1450,
+      rapport_aterrissage: 0.85,
       total_commandes: 1,
       total_depenses_engagees: 1000,
       total_depenses_facturees: 1500

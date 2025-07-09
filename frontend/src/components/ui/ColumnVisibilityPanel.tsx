@@ -1,5 +1,4 @@
 // src/components/ui/ColumnVisibilityPanel.tsx
-import React from 'react';
 import { TableColumn } from '@/types';
 
 interface ColumnVisibilityPanelProps<T extends Record<string, unknown>> {

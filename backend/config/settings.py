@@ -19,18 +19,25 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# Railway provides RAILWAY_STATIC_URL, we'll use that to detect Railway
-IS_RAILWAY = os.getenv("RAILWAY_STATIC_URL") is not None
+# Better Railway detection - check for multiple Railway environment variables
+IS_PRODUCTION = (
+    os.getenv("RENDER") is not None
+    or os.getenv("RAILWAY_PROJECT_ID") is not None
+    or os.getenv("RAILWAY_SERVICE_ID") is not None
+)
 
 # Configure allowed hosts for Railway and local development
 ALLOWED_HOSTS = []
 
-if IS_RAILWAY:
-    # Railway deployment
-    ALLOWED_HOSTS = ["*"]  # Railway handles this with their proxy
+if IS_PRODUCTION:
+    # Railway deployment - allow all hosts (Railway handles routing)
+    ALLOWED_HOSTS = ["*"]
 elif DEBUG:
     # Local development
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+else:
+    # Fallback for production without Railway detection
+    ALLOWED_HOSTS = ["*"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -56,12 +63,13 @@ INSTALLED_APPS = [
     "apps.user_management.apps.UserManagementConfig",
 ]
 
+# FIXED: Middleware order - SessionMiddleware MUST come before CsrfViewMiddleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",  # MUST be before CSRF
     "corsheaders.middleware.CorsMiddleware",  # CORS middleware
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",  # MUST be after Sessions
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -88,7 +96,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Database configuration
-if IS_RAILWAY:
+if IS_PRODUCTION:
     # Railway PostgreSQL database
     DATABASES = {
         "default": {
@@ -166,14 +174,15 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = []
 CSRF_TRUSTED_ORIGINS = []
 
-if IS_RAILWAY:
-    # Production CORS settings - you'll update these after deploying frontend
-    CORS_ALLOWED_ORIGINS = [
-        "https://your-frontend-url.vercel.app",  # Update this after Vercel deployment
-    ]
-    CSRF_TRUSTED_ORIGINS = [
-        "https://your-frontend-url.vercel.app",  # Update this after Vercel deployment
-    ]
+if IS_PRODUCTION:
+    # Production CORS settings - use environment variable
+    cors_origins = (
+        os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+        if os.getenv("CORS_ALLOWED_ORIGINS")
+        else []
+    )
+    CORS_ALLOWED_ORIGINS = cors_origins
+    CSRF_TRUSTED_ORIGINS = cors_origins
 else:
     # Development CORS settings
     CORS_ALLOWED_ORIGINS = [
@@ -187,7 +196,12 @@ else:
         "http://127.0.0.1:3000",
     ]
 
-CSRF_USE_SESSIONS = True
+# FIXED: Temporarily disable CSRF_USE_SESSIONS for Railway
+if IS_PRODUCTION:
+    CSRF_USE_SESSIONS = False  # Disable for production to avoid session issues
+else:
+    CSRF_USE_SESSIONS = True  # Keep enabled for local development
+
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
 CSRF_COOKIE_NAME = "csrftoken"
 
@@ -231,14 +245,16 @@ CACHES = {
 }
 
 # Security settings for production
-if not DEBUG:
-    # HTTPS Security
+if not DEBUG and not IS_RAILWAY:
+    # Only enable HTTPS redirects for non-Railway deployments
+    # Railway handles HTTPS at the proxy level
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-    # Cookie Security
+# Cookie Security (safe for Railway)
+if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 

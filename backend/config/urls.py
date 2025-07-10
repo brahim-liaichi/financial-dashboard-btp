@@ -3,11 +3,35 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.http import JsonResponse
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
+
+
+# Root view for API status
+def root_view(request):
+    """Simple root endpoint to show API status and available endpoints"""
+    return JsonResponse(
+        {
+            "message": "Financial Dashboard Backend API",
+            "status": "running",
+            "version": "1.0.0",
+            "endpoints": {
+                "admin": "/admin/",
+                "api_docs": "/docs/",
+                "api_schema": "/api/schema/",
+                "commandes": "/api/commandes/",
+                "controle_depenses": "/api/controle-depenses/",
+                "facturation": "/api/facturation/",
+                "user_management": "/api/user-management/",
+                "auth": "/api/auth/",
+            },
+        }
+    )
+
 
 # API documentation patterns
 api_doc_patterns = [
@@ -42,6 +66,8 @@ api_patterns = [
 
 # Main URL patterns
 urlpatterns = [
+    # Root endpoint
+    path("", root_view, name="root"),
     # Django admin
     path("admin/", admin.site.urls, name="admin"),
     # Include API documentation

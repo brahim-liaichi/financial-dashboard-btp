@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 import tempfile
 from datetime import timedelta
+import dj_database_url
 
 # Load environment variables from .env file
 load_dotenv()
@@ -96,18 +97,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Database configuration
+# Database configuration
 if IS_PRODUCTION:
-    # Railway PostgreSQL database
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("PGDATABASE"),
-            "USER": os.getenv("PGUSER"),
-            "PASSWORD": os.getenv("PGPASSWORD"),
-            "HOST": os.getenv("PGHOST"),
-            "PORT": os.getenv("PGPORT", "5432"),
-        }
-    }
+    # Use DATABASE_URL for production (Render/Railway)
+    DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL"))}
 else:
     # Local SQLite database
     DATABASES = {

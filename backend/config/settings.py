@@ -245,7 +245,7 @@ CACHES = {
 }
 
 # Security settings for production
-if not DEBUG and not IS_RAILWAY:
+if not DEBUG and not IS_PRODUCTION:
     # Only enable HTTPS redirects for non-Railway deployments
     # Railway handles HTTPS at the proxy level
     SECURE_SSL_REDIRECT = True

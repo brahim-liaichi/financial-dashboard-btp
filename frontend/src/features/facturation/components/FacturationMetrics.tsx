@@ -1,9 +1,7 @@
-// Path: frontend/src/features/controle-depenses/components/FacturationMetrics.tsx
-
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/utils/formatters';
-import { FileBarChart } from 'lucide-react';
+import { FileBarChart, ExternalLink } from 'lucide-react';
 import { FacturationMetrics as FacturationMetricsType } from '@/hooks/useFacturation';
 
 interface FacturationMetricsProps {
@@ -60,20 +58,32 @@ export const FacturationMetrics: React.FC<FacturationMetricsProps> = ({
             title: 'Total Règlement',
             value: summaryMetrics ? 
                 formatCurrency(summaryMetrics.avancementTotal) : '0,00 €',
-            tooltip: 'Montant total des avancements',
+            tooltip: 'Montant total des avancements - Cliquez pour voir les détails',
             category: 'payment',
             action: onViewDetailsClick ? (
-                <button 
-                    onClick={onViewDetailsClick}
-                    className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                    title="Voir les détails"
-                >
-                    <FileBarChart className="h-5 w-5" />
-                </button>
+                <div className="absolute top-3 right-3">
+                    {/* Interactive button with clear styling */}
+                    <button 
+                        onClick={onViewDetailsClick}
+                        className="group relative flex items-center space-x-1 px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-all duration-200 border border-blue-200 hover:border-blue-300"
+                        title="Cliquez pour voir le détail des facturations"
+                    >
+                        <FileBarChart className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Détails</span>
+                        <ExternalLink className="h-3 w-3 opacity-60" />
+                        
+                        {/* Tooltip for extra clarity */}
+                        <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block">
+                            <div className="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                                Voir la page facturation
+                                <div className="absolute top-full right-4 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
             ) : undefined
         }
     ] as const;
-
 
     // Render states
     if (isLoading) {
@@ -107,13 +117,19 @@ export const FacturationMetrics: React.FC<FacturationMetricsProps> = ({
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {metrics.map((metric, index) => (
-                <Card key={index}>
+                <Card key={index} className={metric.action ? "relative hover:shadow-md transition-shadow" : ""}>
                     <div className="p-4 relative">
                         <h3 
                             className="text-sm font-medium text-gray-500 mb-1"
                             title={metric.tooltip}
                         >
                             {metric.title}
+                            {/* Add visual indicator when interactive */}
+                            {metric.action && (
+                                <span className="ml-1 text-blue-500 text-xs">
+                                    (cliquable)
+                                </span>
+                            )}
                         </h3>
                         <div className="truncate">
                             <p className="text-2xl font-semibold text-gray-900">
@@ -123,6 +139,12 @@ export const FacturationMetrics: React.FC<FacturationMetricsProps> = ({
                             {metric.category === 'payment' && summaryMetrics?.paymentPercentage && (
                                 <p className="text-sm text-gray-500">
                                     {summaryMetrics.paymentPercentage.toFixed(1)}% du total facturé
+                                </p>
+                            )}
+                            {/* Add call-to-action for interactive cards */}
+                            {metric.action && (
+                                <p className="text-xs text-blue-600 mt-1 opacity-75">
+                                    💡 Cliquez sur "Détails" pour voir la facturation
                                 </p>
                             )}
                         </div>

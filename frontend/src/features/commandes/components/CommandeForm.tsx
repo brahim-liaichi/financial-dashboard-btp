@@ -64,22 +64,15 @@ export const CommandeForm: React.FC<CommandeFormProps> = ({
         watch
     } = useForm<Commande>({
         defaultValues: initialData ? {
-            ...(() => {
-                console.log('Initial Data:', initialData);
-                return {};
-            })(),
-
             numero_document: String(initialData.numero_document || ''),
             annule: initialData.annule || 'N',
             statut_document: initialData.statut_document || 'O',
             date_enregistrement: initialData.date_enregistrement
                 ? (() => {
-                    console.log('Original date_enregistrement:', initialData.date_enregistrement);
                     try {
                         // Ensure we're using the date part only
                         const date = new Date(initialData.date_enregistrement);
                         const formattedDate = date.toISOString().split('T')[0];
-                        console.log('Formatted date_enregistrement:', formattedDate);
                         return formattedDate;
                     } catch (error) {
                         console.error('Error formatting date_enregistrement:', error);
@@ -89,12 +82,10 @@ export const CommandeForm: React.FC<CommandeFormProps> = ({
                 : '',
             date_echeance: initialData.date_echeance
                 ? (() => {
-                    console.log('Original date_echeance:', initialData.date_echeance);
                     try {
                         // Ensure we're using the date part only
                         const date = new Date(initialData.date_echeance);
                         const formattedDate = date.toISOString().split('T')[0];
-                        console.log('Formatted date_echeance:', formattedDate);
                         return formattedDate;
                     } catch (error) {
                         console.error('Error formatting date_echeance:', error);
@@ -136,8 +127,6 @@ export const CommandeForm: React.FC<CommandeFormProps> = ({
     // Update form when initialData changes
     React.useEffect(() => {
         if (initialData) {
-            console.log('Effect initialData:', initialData);
-
             Object.entries(initialData).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {
                     // Special handling for dates
@@ -145,10 +134,8 @@ export const CommandeForm: React.FC<CommandeFormProps> = ({
                         const formattedDate = value
                             ? new Date(value).toISOString().split('T')[0]
                             : '';
-                        console.log(`Setting ${key}:`, formattedDate);
                         setValue(key as keyof Commande, formattedDate);
                     } else {
-                        console.log(`Setting ${key}:`, value);
                         setValue(key as keyof Commande, value);
                     }
                 }

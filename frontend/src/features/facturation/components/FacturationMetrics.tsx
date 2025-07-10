@@ -1,6 +1,6 @@
 // Path: frontend/src/features/controle-depenses/components/FacturationMetrics.tsx
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/utils/formatters';
 import { FileBarChart } from 'lucide-react';
@@ -27,25 +27,6 @@ export const FacturationMetrics: React.FC<FacturationMetricsProps> = ({
     isLoading,
     error
 }): JSX.Element => {
-    // Added useEffect for debugging
-    useEffect(() => {
-        console.group('FacturationMetrics Debug');
-        console.log('Raw Data:', data);
-        console.log('Is Loading:', isLoading);
-        console.log('Error:', error);
-        
-        if (data) {
-            console.log('Facturation Total (raw):', data.facturation_total);
-            console.log('Avancement Total (raw):', data.avancement_total);
-            
-            // Additional type and value checks
-            console.log('Facturation Total Type:', typeof data.facturation_total);
-            console.log('Avancement Total Type:', typeof data.avancement_total);
-        }
-        
-        console.groupEnd();
-    }, [data, isLoading, error]);
-
     const summaryMetrics = useMemo(() => {
         if (!data) return null;
 

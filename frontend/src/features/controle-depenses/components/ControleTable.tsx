@@ -421,10 +421,6 @@ const handleDeselectAllColumns = () => {
     }, [columns]);
 
     const processedData = useMemo(() => {
-        console.log('Processing data');
-        console.log('Total Data Items:', data.length);
-        console.log('External Filters:', { selectedProject, selectedProjectType });
-        console.log('Table Filters:', filterConfig);
 
         // If showing updated row, return only that row
         if (showingUpdated && selectedItem) {

@@ -46,8 +46,7 @@ export const FacturationPage: React.FC = () => {
         onError: (err) => {
             console.error('Excel upload error:', err.message);
         },
-        onSuccess: (message) => {
-            console.log('Excel upload success:', message);
+        onSuccess: () => {
             if (projectCode) {
                 fetchTables(projectCode);
             }

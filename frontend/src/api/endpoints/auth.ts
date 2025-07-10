@@ -12,10 +12,10 @@ interface LoginResponse {
 
 export const authApi = {
     login: (username: string, password: string) => {
-        console.log('Login Payload:', { username, password });
+       
         return client.post<LoginResponse>('/auth/login/', { username, password })
             .then(response => {
-                console.log('Login Response:', response);
+               
                 return response;
             })
             .catch(error => {

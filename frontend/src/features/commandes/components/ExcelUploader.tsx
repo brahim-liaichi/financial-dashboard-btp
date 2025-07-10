@@ -62,22 +62,8 @@ export const ExcelUploader: React.FC<ExcelUploaderProps> = ({
         setError(null);
 
         try {
-            // Detailed file logging for debugging
-            console.log('Uploading file:', {
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                lastModified: file.lastModified
-            });
-
             // Use API method for better error handling
-            const importedCommandes = await commandesApi.importExcel(file);
-
-            // Log successful import details
-            console.log('Import successful:', {
-                total_imported: importedCommandes.length,
-                file_name: file.name
-            });
+            await commandesApi.importExcel(file);
 
             // Reset file input
             setFile(null);

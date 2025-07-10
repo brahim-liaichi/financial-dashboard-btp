@@ -13,33 +13,9 @@ type ExtendedCommandeFilters = Omit<OriginalCommandeFilters, 'code_projet'> & {
     project?: string;
 };
 
-const createApiLogger = (group: string) => ({
-    start() {
-        console.group(group);
-        console.time('API Request');
-    },
-    log(message: string, data?: unknown) {
-        console.log(message, data);
-    },
-    end(result?: unknown) {
-        console.timeEnd('API Request');
-        console.log('Result:', result);
-        console.groupEnd();
-    },
-    error(error: unknown) {
-        console.error('API Error:', error);
-        console.groupEnd();
-    }
-});
-
 export const commandesApi = {
     getAll: async (params?: ExtendedCommandeFilters, signal?: AbortSignal): Promise<PaginatedResponse<Commande>> => {
-        const logger = createApiLogger('🔍 Commandes API Request');
-        
         try {
-            logger.start();
-            logger.log('Raw Input Params:', params);
-    
             const apiParams: Record<string, unknown> = {
                 page: params?.page || 1,
                 page_size: params?.page_size || 25,
@@ -51,42 +27,22 @@ export const commandesApi = {
                 apiParams[key] === undefined && delete apiParams[key]
             );
     
-            logger.log('🔧 Processed API Params:', apiParams);
-    
             const response = await apiClient.get<PaginatedResponse<Commande>>(
                 ENDPOINTS.COMMANDES.BASE,
                 { params: apiParams, signal }
             );
     
-            const pageSize = Number(params?.page_size) || 25;
-            const totalCount = Number(response.data.count) || 0;
-    
-            const metadata = {
-                count: response.data.count,
-                pages: Math.ceil(totalCount / pageSize),
-                currentPage: apiParams.page || 1
-            };
-    
-            logger.log('📊 API Response Metadata:', metadata);
-            logger.end(response.data);
-    
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && (error.name === 'CanceledError' || error.code === 'ERR_CANCELED')) {
-                logger.log('Request was canceled');
-            } else {
-                logger.error(error);
+                // Request was canceled
             }
             throw error;
         }
     },
 
     getAllUniqueProjects: async (): Promise<{ code: string; name: string }[]> => {
-        const logger = createApiLogger('🔍 Fetching Unique Projects');
-
         try {
-            logger.start();
-
             const response = await apiClient.get<{ 
                 projects: { code: string; name: string }[]; 
                 count: number 
@@ -96,51 +52,31 @@ export const commandesApi = {
                 new Map(response.data.projects.map(p => [p.code, p])).values()
             ).sort((a, b) => a.code.localeCompare(b.code));
 
-            logger.log('Unique Projects:', uniqueProjects);
-            logger.end(uniqueProjects);
-
             return uniqueProjects;
-        } catch (error) {
-            logger.error(error);
+        } catch {
             return [];
         }
     },
 
     importExcel: async (file: File): Promise<ApiResponse<Commande[]>> => {
-        const logger = createApiLogger('Excel Import');
+        const formData = new FormData();
+        formData.append('file', file);
 
-        try {
-            logger.start();
-            logger.log('File Details:', {
-                name: file.name,
-                size: file.size,
-                type: file.type
-            });
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const response = await apiClient.post<ApiResponse<Commande[]>>(
-                ENDPOINTS.COMMANDES.IMPORT,
-                formData,
-                {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    validateStatus: (status) => status >= 200 && status < 500
-                }
-            );
-
-            if (response.status !== 200 && response.status !== 201) {
-                const errorMessage = response.data.error || 'Unknown import error';
-                logger.error(errorMessage);
-                throw new Error(errorMessage);
+        const response = await apiClient.post<ApiResponse<Commande[]>>(
+            ENDPOINTS.COMMANDES.IMPORT,
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                validateStatus: (status) => status >= 200 && status < 500
             }
+        );
 
-            logger.end(response.data);
-            return response.data;
-        } catch (error) {
-            logger.error(error);
-            throw error;
+        if (response.status !== 200 && response.status !== 201) {
+            const errorMessage = response.data.error || 'Unknown import error';
+            throw new Error(errorMessage);
         }
+
+        return response.data;
     },
 
     clearAll: async (): Promise<ApiResponse<ClearAllResponse>> => {

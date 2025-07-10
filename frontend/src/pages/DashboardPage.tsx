@@ -21,17 +21,14 @@ export const DashboardPage: React.FC = () => {
 
     // Handlers with useCallback for performance
     const handleProjectChange = useCallback((project: string) => {
-        console.log('Handling project change:', project);
         setSelectedProject(project);
     }, [setSelectedProject]);
 
     const handleArticleSearch = useCallback((search: string) => {
-        console.log('Handling article search:', search);
         setArticleSearch(search);
     }, [setArticleSearch]);
 
     const handleResetFilters = useCallback(() => {
-        console.log('Resetting filters');
         setSelectedProject('');
         setArticleSearch('');
     }, [setSelectedProject, setArticleSearch]);

@@ -49,12 +49,9 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
         abortControllerRef.current = new AbortController();
        
         //const signal = abortControllerRef.current.signal;
-
-        // Removed debug log
         
         // Prevent redundant fetches
         if (isLoadingCommandes && isEqual(filters, lastFiltersRef.current)) {
-            // Removed debug log
             return;
         }
     
@@ -75,11 +72,9 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
                 }
             });
             
-            // Removed debug log
             lastFiltersRef.current = safeFilters;
     
             const response = await fetchCommandes(safeFilters);
-            // Removed debug log
     
             if (response.results) {
                 setCommandes(response.results);
@@ -89,10 +84,6 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
                         current_page: safeFilters.page || prev.current_page,
                         page_size: safeFilters.page_size || prev.page_size
                     };
-                    console.log('📊 useCommandeTable - Pagination update:', {
-                        old: prev,
-                        new: newPagination
-                    });
                     return newPagination;
                 });
             }
@@ -112,31 +103,23 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
     // Page change handler with validation
     const changePage = useCallback((page: number) => {
         if (page < 1) page = 1;
-        console.log('📄 useCommandeTable - Changing page:', {
-            from: pagination.current_page,
-            to: page
-        });
         
         setPagination(prev => ({
             ...prev,
             current_page: page
         }));
-    }, [pagination.current_page]);
+    }, []);
 
     // Change page size handler with validation
     const changePageSize = useCallback((newSize: number) => {
         if (newSize < 1) newSize = 10;
-        console.log('📏 useCommandeTable - Changing page size:', {
-            from: pagination.page_size,
-            to: newSize
-        });
 
         setPagination(prev => ({
             ...prev,
             page_size: newSize,
             current_page: 1 // Reset to first page
         }));
-    }, [pagination.page_size]);
+    }, []);
 
     // Effect to trigger load when pagination changes
     useEffect(() => {

@@ -15,11 +15,10 @@ export const LoginPage: React.FC = () => {
         setError('');
         
         try {
-            console.log('Login Attempt:', { username }); // Log username attempt
             await login(username, password);
             navigate('/dashboard');
         } catch (error) {
-            console.error('Full Login Error:', error); // Log full error details
+            console.error('Full Login Error:', error);
             setError('Invalid username or password');
         }
     };

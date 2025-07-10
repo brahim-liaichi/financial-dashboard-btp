@@ -80,7 +80,7 @@ export const ControleFilters: React.FC<ControleFiltersProps> = ({
    const handleUserChange = (value: string) => {
        setSelectedUser(value);
        // Add any additional logic for user selection if needed
-       console.log('Selected User:', value);
+       
    };
 
    const handleReset = () => {

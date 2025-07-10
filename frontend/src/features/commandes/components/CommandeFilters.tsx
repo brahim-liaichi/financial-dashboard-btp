@@ -26,7 +26,6 @@ const CommandeFilters: React.FC<CommandeFiltersProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedFilterChange = useCallback(
         debounce((key: 'numero_document', value: string | undefined) => {
-            console.log(`🔍 CommandeFilters - ${key} changed:`, value);
             onFilterChange({ [key]: value });
         }, 300),
         [onFilterChange]
@@ -37,9 +36,8 @@ const CommandeFilters: React.FC<CommandeFiltersProps> = ({
         debouncedFilterChange('numero_document', value || undefined);
     }, [debouncedFilterChange]);
 
-    // Reset handler with logging
+    // Reset handler
     const handleReset = useCallback(() => {
-        console.log('🔄 CommandeFilters - Resetting filters');
         onReset();
     }, [onReset]);
 

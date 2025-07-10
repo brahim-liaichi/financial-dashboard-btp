@@ -17,8 +17,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
     onFilterChange,
     onClose
 }) => {
-    console.log('Initial Filter:', filter);
-
     // Local state to handle input value
     const [localValue, setLocalValue] = useState(
         filter.type === 'string' ? filter.value : 
@@ -39,9 +37,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
 
     // Reset local states when filter changes
     useEffect(() => {
-        console.log('Current Filter:', filter);
-        console.log('Current Filter Type:', filter.type);
-
         // Only update if the filter is materially different
         if (
             filter.type !== currentFilter.type || 
@@ -53,17 +48,10 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
                 filter.type === 'select' ? filter.value ?? '' :
                 filter.value?.toString() ?? '';
 
-            console.log('Updating Local Value:', {
-                newLocalValue,
-                filterValue: filter.value,
-                filterType: filter.type
-            });
-
             setLocalValue(newLocalValue);
 
             if (filter.type === 'numeric') {
                 const numericFilter = filter as NumericFilter;
-                console.log('Updating Numeric Operator:', numericFilter.operator);
                 setLocalOperator(numericFilter.operator);
             }
 
@@ -84,11 +72,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
                     value={localOperator}
                     onChange={(value) => {
                         const newOperator = value as ComparisonOperator;
-                        console.log('Operator Changed:', {
-                            oldOperator: localOperator,
-                            newOperator,
-                            currentFilter: filter
-                        });
                         setLocalOperator(newOperator);
                         onFilterChange({
                             ...filter,
@@ -103,12 +86,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
                     value={localValue}
                     onChange={(e) => {
                         const newValue = e.target.value;
-                        console.log('Numeric Input Changed:', {
-                            oldValue: localValue,
-                            newValue,
-                            parsedValue: newValue ? Number(newValue) : null,
-                            currentFilter: filter
-                        });
                         setLocalValue(newValue);
                         onFilterChange({
                             ...filter,
@@ -129,11 +106,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
                 value={localValue}
                 onChange={(e) => {
                     const newValue = e.target.value;
-                    console.log('String Input Changed:', {
-                        oldValue: localValue,
-                        newValue,
-                        currentFilter: filter
-                    });
                     setLocalValue(newValue);
                     onFilterChange({
                         ...filter,
@@ -156,11 +128,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
             <Select
                 value={localValue}
                 onChange={(value) => {
-                    console.log('Select Changed:', {
-                        oldValue: localValue,
-                        newValue: value,
-                        currentFilter: filter
-                    });
                     setLocalValue(value);
                     onFilterChange({
                         ...filter,
@@ -174,7 +141,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
 
     const handleCancel = () => {
         // Revert to the original filter when cancelling
-        console.log('Cancelling with original filter:', originalFilter);
         onFilterChange(originalFilter);
         onClose();
     };
@@ -198,7 +164,6 @@ export const ColumnFilterDropdown: React.FC<ColumnFilterDropdownProps> = ({
                         variant="primary"
                         size="sm"
                         onClick={() => {
-                            console.log('Clear Filter Clicked:', filter);
                             setLocalValue('');
                             const clearFilter = {
                                 ...filter,

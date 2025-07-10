@@ -60,11 +60,6 @@ export const useCommandes = () => {
 
     const fetchCommandes = useCallback(async (params: CommandeFilters): Promise<PaginatedResponse<Commande>> => {
         const cacheKey = generateCacheKey(params);
-        console.log('🔍 useCommandes - Fetch attempt:', {
-            params,
-            cacheKey,
-            hasCache: !!fetchCacheRef.current[cacheKey]
-        });
         
         const now = Date.now();
         const cachedEntry = fetchCacheRef.current[cacheKey];
@@ -87,17 +82,7 @@ export const useCommandes = () => {
     
             const response = await commandesApi.getAll(processedParams);
             
-            // Enhanced logging for quantite_livree
-            console.log('📨 useCommandes - API response:', {
-                count: response.count,
-                resultsLength: response.results?.length,
-                params: processedParams,
-                // Add summary of quantite_livree
-                deliveryStats: response.results?.reduce((acc, commande) => ({
-                    total: acc.total + (commande.quantite_livree || 0),
-                    itemsWithDelivery: acc.itemsWithDelivery + (commande.quantite_livree > 0 ? 1 : 0)
-                }), { total: 0, itemsWithDelivery: 0 })
-            });
+            // Removed debug log
     
             fetchCacheRef.current[cacheKey] = {
                 data: response,

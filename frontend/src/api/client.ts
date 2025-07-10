@@ -41,22 +41,10 @@ apiClient.interceptors.request.use(
 
         // Add auth token if it exists
         const authToken = localStorage.getItem('token');
-        
-        // Logging for debugging
-        // Removed debug log
-        // Removed debug log
 
         if (authToken) {
             config.headers['Authorization'] = `Bearer ${authToken}`;
         }
-
-        console.log('Full Request Config:', {
-            method: config.method,
-            url: config.url,
-            baseURL: config.baseURL,
-            headers: config.headers,
-            data: config.data
-        });
 
         return config;
     }, 
@@ -67,11 +55,6 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
     (response: AxiosResponse) => {
-        console.log('Response received:', {
-            status: response.status,
-            data: response.data,
-            headers: response.headers
-        });
         return response;
     },
     (error) => {
@@ -89,7 +72,6 @@ apiClient.interceptors.response.use(
             });
             
             if (error.response?.status === 401) {
-                // Removed debug log
                 localStorage.removeItem('token');
                 window.location.href = '/login';
             }

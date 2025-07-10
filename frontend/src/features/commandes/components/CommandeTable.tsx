@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, memo, useEffect } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { Table, TableColumn } from '@/components/ui/Table';
 import type { Commande, Project } from '@/types';
 import { formatDate, formatCurrency } from '@/utils/formatters';
@@ -40,14 +40,6 @@ const CommandeTableComponent: React.FC<CommandeTableProps> = ({
   projects,
   onRowClick
 }) => {
-  // Performance logging (can be removed in production)
-  useEffect(() => {
-    console.log('CommandeTable rendered', {
-      commandesLength: commandes.length,
-      projectsLength: projects.length,
-      loading
-    });
-  }, [commandes, projects, loading]);
   // Create projects map for efficient lookups
   const projectsMap = useMemo(() => {
     const map: Record<string, Project> = {};

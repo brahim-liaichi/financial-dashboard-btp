@@ -18,17 +18,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     min,
     max
 }) => {
-    // Add logging to help diagnose the issue
-    React.useEffect(() => {
-        console.log('DatePicker Props:', { 
-            value, 
-            min, 
-            max,
-            valueType: typeof value,
-            valueIsValidDate: /^\d{4}-\d{2}-\d{2}$/.test(value)
-        });
-    }, [value, min, max]);
-
     return (
         <div>
             {label && (
@@ -41,9 +30,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                     type="date"
                     value={value}
                     onChange={(e) => {
-                        console.log('DatePicker onChange:', {
-                            inputValue: e.target.value
-                        });
                         onChange(e.target.value);
                     }}
                     min={min}

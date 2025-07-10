@@ -140,8 +140,6 @@ export const useControle = (options: {
                 
             };
 
-            console.log('Raw Controle sorted Evolution Data:', sortedData);
-
             setEvolutionData(sortedData);
             return sortedData;
         } catch (err) {

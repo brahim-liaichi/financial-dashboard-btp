@@ -30,7 +30,6 @@ export const useCommandeFilters = ({
         debounce((cleanedFilters: CommandeFilterState) => {
             // Only trigger if filters have actually changed
             if (onFilterChange && !isEqual(previousFiltersRef.current, cleanedFilters)) {
-                console.log('🎯 useCommandeFilters - Debounced filter change:', cleanedFilters);
                 onFilterChange(cleanedFilters);
                 previousFiltersRef.current = cleanedFilters;
             }

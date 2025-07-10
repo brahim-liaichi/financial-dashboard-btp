@@ -70,13 +70,13 @@ export const useCommandes = () => {
         const cachedEntry = fetchCacheRef.current[cacheKey];
         
         if (cachedEntry && now - cachedEntry.timestamp < CACHE_DURATION.COMMANDES) {
-            console.log('📦 useCommandes - Returning cached data:', cacheKey);
+            // Removed debug log
             return cachedEntry.data;
         }
     
         try {
             setLoading(true);
-            console.log('🌐 useCommandes - Making API call:', params);
+            // Removed debug log
             
             const processedParams = {
                 page: params.page,
@@ -197,11 +197,11 @@ export const useCommandes = () => {
     const invalidateCache = useCallback((filters?: Partial<CommandeFilters>) => {
         const cacheKey = generateCacheKey(filters);
         delete fetchCacheRef.current[cacheKey];
-        console.log('🗑️ useCommandes - Invalidated cache key:', cacheKey);
+        // Removed debug log
     }, []);
     
     const invalidateAllCaches = useCallback(() => {
-        console.log('🗑️ useCommandes - Invalidating all caches');
+        // Removed debug log
         fetchCacheRef.current = {};
         projectsCacheRef.current = { data: [], timestamp: 0 };
     }, []);

@@ -43,8 +43,8 @@ apiClient.interceptors.request.use(
         const authToken = localStorage.getItem('token');
         
         // Logging for debugging
-        console.log('Request URL:', config.url);
-        console.log('Auth Token Present:', !!authToken);
+        // Removed debug log
+        // Removed debug log
 
         if (authToken) {
             config.headers['Authorization'] = `Bearer ${authToken}`;
@@ -89,7 +89,7 @@ apiClient.interceptors.response.use(
             });
             
             if (error.response?.status === 401) {
-                console.log('Unauthorized Error:', error.response.data);
+                // Removed debug log
                 localStorage.removeItem('token');
                 window.location.href = '/login';
             }

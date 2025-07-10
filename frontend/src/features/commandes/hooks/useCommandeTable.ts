@@ -50,11 +50,11 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
        
         //const signal = abortControllerRef.current.signal;
 
-        console.log('📥 useCommandeTable - Loading commandes with filters:', filters);
+        // Removed debug log
         
         // Prevent redundant fetches
         if (isLoadingCommandes && isEqual(filters, lastFiltersRef.current)) {
-            console.log('🔄 useCommandeTable - Skipping fetch (same filters):', filters);
+            // Removed debug log
             return;
         }
     
@@ -75,11 +75,11 @@ export const useCommandeTable = ({ projects }: UseCommandeTableProps) => {
                 }
             });
             
-            console.log('🚀 useCommandeTable - Fetching with safe filters:', safeFilters);
+            // Removed debug log
             lastFiltersRef.current = safeFilters;
     
             const response = await fetchCommandes(safeFilters);
-            console.log('✅ useCommandeTable - Fetch response:', response);
+            // Removed debug log
     
             if (response.results) {
                 setCommandes(response.results);

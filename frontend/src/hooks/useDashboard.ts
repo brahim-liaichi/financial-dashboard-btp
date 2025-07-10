@@ -122,7 +122,7 @@ export const useDashboard = () => {
     const fetchDashboardData = useCallback(async () => {
         // Prevent multiple simultaneous fetches
         if (isFetchInProgress.current) {
-            console.log('Fetch already in progress');
+            // Removed debug log
             return;
         }
 
@@ -174,7 +174,7 @@ export const useDashboard = () => {
             // Reset state
             setState(prev => ({ ...prev, loading: false, error: null }));
 
-            console.log('Données du tableau de bord chargées avec succès');
+            // Removed debug log
         } catch (error) {
             console.error('Erreur lors du chargement des données:', error);
 
@@ -231,7 +231,7 @@ export const useDashboard = () => {
                  currentTime - lastSuccessfulFetchTime.current > fifteenMinutes) &&
                 isNetworkAvailable()
             ) {
-                console.log('Vérification et actualisation des données');
+                // Removed debug log
                 await fetchDashboardData();
             }
         };
@@ -249,12 +249,12 @@ export const useDashboard = () => {
     // Network status change listeners
     useEffect(() => {
         const handleOnline = () => {
-            console.log('Connectivité réseau rétablie');
+            // Removed debug log
             fetchDashboardData();
         };
 
         const handleOffline = () => {
-            console.log('Connectivité réseau perdue');
+            // Removed debug log
             setState(prev => ({
                 ...prev,
                 loading: false,
